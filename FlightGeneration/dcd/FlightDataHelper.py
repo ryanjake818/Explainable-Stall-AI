@@ -1,11 +1,11 @@
-import math
 import random
 
 import numpy as np
 
-from FlightGeneration.dcd.FlightData import FlightData
+from dcd.FlightData import FlightData
 
 
+# first initial flight creation, lot of randomness to set the records
 def create_flight(flight_id):
     initial_alt = random.randint(5000, 43000)
     time_to_buffet = random.randint(0, 100)
@@ -68,6 +68,7 @@ def create_flight(flight_id):
         pitch_angle)
 
 
+# generate flight record based on constants and past flight data
 def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buffet_to_uncommanded_descent,
                            magnitude_of_uncommanded_descent, time_from_buffet_to_uncommanded_roll,
                            magnitude_of_uncommanded_roll, period_of_uncommanded_roll, initial_airspeed,

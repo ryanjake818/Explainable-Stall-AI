@@ -1,5 +1,6 @@
 class FlightData:
 
+    # creation method, need all of these every time for a flight record
     def __init__(self,
                  flight_id,
                  initial_alt,
@@ -54,7 +55,7 @@ class FlightData:
         self.initial_alt = initial_alt
         self.flight_id = flight_id
 
-
+    # code to make the data a dictionary so it's easy to use/view
     def to_dict(self):
         return {
             'flight_id': self.flight_id,
