@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-from dcd.FlightData import FlightData
+from FlightGeneration.dcd.FlightData import FlightData
 
 
 # first initial flight creation, lot of randomness to set the records
