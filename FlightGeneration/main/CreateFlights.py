@@ -2,7 +2,7 @@ import random
 
 import pandas as pd
 
-import dcd.FlightDataHelper as flightHelper
+import FlightGeneration.dcd.FlightDataHelper as flightHelper
 
 if __name__ == '__main__':
     # just random number of seconds between 1000 and 50000 to generate flight records every .1 second
