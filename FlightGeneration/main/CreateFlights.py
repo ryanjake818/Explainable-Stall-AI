@@ -36,6 +36,8 @@ if __name__ == '__main__':
                                                                 last_flight_record.cur_altitude,
                                                                 last_flight_record.cur_airspeed,
                                                                 last_flight_record.angle_of_attack)
+        if new_flight_record.cur_altitude <= 0:
+            break
         # add new record to the list
         flight_series.append(new_flight_record)
 
@@ -44,6 +46,7 @@ if __name__ == '__main__':
 
     # print dataframe
     print(df)
+    df.to_excel("Stall_Data.xlsx")
 
     # just looking at first 10 records
     for i in range(10):
