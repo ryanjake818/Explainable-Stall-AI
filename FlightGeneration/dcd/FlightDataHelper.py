@@ -126,7 +126,7 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
 
     roll = 0
     if cur_time > time_from_buffet_to_uncommanded_roll:
-        roll = np.sin(flight_path_angle)
+        roll = np.sin(magnitude_of_uncommanded_roll)
 
     return FlightData(
         flight_id,
