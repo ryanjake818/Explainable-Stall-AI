@@ -1,12 +1,11 @@
 import random
 
-import matplotlib.pyplot as plt
 import pandas as pd
 
 import FlightGeneration.dcd.FlightDataHelper as flightHelper
 
 
-def create_flight_records(flight_id,writer):
+def create_flight_records(flight_id, writer):
     # just random number of seconds between 1000 and 50000 to generate flight records every .1 second
     num_iterations = random.randint(1000, 50000) - 1
 
@@ -51,10 +50,8 @@ def create_flight_records(flight_id,writer):
     df.to_excel(writer, sheet_name=f"sheet_data_{flight_id}")
 
 
-
-
 if __name__ == '__main__':
     writer = pd.ExcelWriter('stall_data.xlsx', engine='xlsxwriter')
     for i in range(100):
-        create_flight_records(i,writer)
+        create_flight_records(i, writer)
     writer.save()
