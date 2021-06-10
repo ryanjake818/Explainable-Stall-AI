@@ -99,18 +99,18 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
 
     #altitude calculation
     cur_alt = initial_alt + alt_noise
-    if cur_time > time_from_buffet_to_uncommanded_descent_high + time_to_buffet:
+    if cur_time > time_to_buffet+ time_from_buffet_to_uncommanded_descent_high:
         cur_alt = round(past_alt - (magnitude_of_uncommanded_descent_high / delta_time) + alt_noise, 6)
-    elif cur_time > time_from_buffet_to_uncommanded_descent + time_to_buffet:
+    elif cur_time > time_to_buffet + time_from_buffet_to_uncommanded_descent :
         cur_alt = round(past_alt - (magnitude_of_uncommanded_descent / delta_time) + alt_noise, 6)
-    elif cur_time > (time_from_buffet_to_uncommanded_descent - 5):
+    elif cur_time > time_to_buffet + (time_from_buffet_to_uncommanded_descent - 5):
         cur_alt = initial_alt + alt_noise_buffet
 
     vertical_speed = round((cur_alt - past_alt) / delta_time, 6)
 
     #angle_of_attack calculation
     angle_of_attack = 0
-    if cur_time > time_from_buffet_to_positive_angle_of_attack + time_to_buffet:
+    if cur_time > time_to_buffet+ time_from_buffet_to_positive_angle_of_attack:
         if past_angle_of_attack + rate_of_change_in_angle_of_attack > max_angle_of_attack:
             angle_of_attack = max_angle_of_attack
         else:
@@ -122,7 +122,7 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
 
     flight_path_angle = 0
 
-    if airspeed_noise != 0:
+    if cur_airspeed != 0:
         #arcsin needs to be between -1 and 1, we keep getting failure notice when vs/ca isn't in that range
         flight_path_angle = round(np.arcsin(vertical_speed / cur_airspeed), 6)
 
@@ -131,7 +131,7 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
 
     #roll calculation
     roll = 0
-    if cur_time > time_from_buffet_to_uncommanded_roll:
+    if cur_time > time_to_buffet + time_from_buffet_to_uncommanded_roll:
         roll = np.sin(magnitude_of_uncommanded_roll)
 
     return FlightData(
