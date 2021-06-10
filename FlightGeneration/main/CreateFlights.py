@@ -11,7 +11,7 @@ def create_flight_records(flight_id, writer):
 
     # generate empty list for a flight
     flight_series = []
-    # create intial flight with flight_id 1
+    # create initial flight with flight_id 1
     base_flight = flightHelper.create_flight(flight_id)
     # add the first flight to the list
     flight_series.append(base_flight)
