@@ -96,6 +96,8 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
     alt_noise_buffet = round(np.random.normal(0, 10, 1)[0], 6)
     airspeed_noise = round(np.random.normal(0, 5, 1)[0], 6)
     airspeed_noise_buffet = round(np.random.normal(0, 10, 1)[0], 6)
+
+    #altitude calculation
     cur_alt = initial_alt + alt_noise
     if cur_time > time_from_buffet_to_uncommanded_descent_high + time_to_buffet:
         cur_alt = round(past_alt - (magnitude_of_uncommanded_descent_high / delta_time) + alt_noise, 6)
@@ -106,6 +108,7 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
 
     vertical_speed = round((cur_alt - past_alt) / delta_time, 6)
 
+    #angle_of_attack calculation
     angle_of_attack = 0
     if cur_time > time_from_buffet_to_positive_angle_of_attack + time_to_buffet:
         if past_angle_of_attack + rate_of_change_in_angle_of_attack > max_angle_of_attack:
@@ -120,10 +123,13 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
     flight_path_angle = 0
 
     if airspeed_noise != 0:
+        #arcsin needs to be between -1 and 1, we keep getting failure notice when vs/ca isn't in that range
         flight_path_angle = round(np.arcsin(vertical_speed / cur_airspeed), 6)
 
+    #pitch angle calculation
     pitch_angle = flight_path_angle + angle_of_attack
 
+    #roll calculation
     roll = 0
     if cur_time > time_from_buffet_to_uncommanded_roll:
         roll = np.sin(magnitude_of_uncommanded_roll)
