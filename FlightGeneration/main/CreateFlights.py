@@ -5,14 +5,15 @@ import pandas as pd
 
 import FlightGeneration.dcd.FlightDataHelper as flightHelper
 
-if __name__ == '__main__':
+
+def create_flight_records(flight_id,writer):
     # just random number of seconds between 1000 and 50000 to generate flight records every .1 second
     num_iterations = random.randint(1000, 50000) - 1
 
     # generate empty list for a flight
     flight_series = []
     # create intial flight with flight_id 1
-    base_flight = flightHelper.create_flight(1)
+    base_flight = flightHelper.create_flight(flight_id)
     # add the first flight to the list
     flight_series.append(base_flight)
     for i in range(num_iterations):
@@ -45,27 +46,15 @@ if __name__ == '__main__':
     # convert list to dataframe
     df = pd.DataFrame([x.to_dict() for x in flight_series])
 
-    # print dataframe
-    print(df)
-    df.to_excel("Stall_Data.xlsx")
+    # put df in excel
 
-    fig, axs = plt.subplots(7)
-    axs[0].plot(df['cur_time'], df['cur_altitude'])
-    axs[0].set_title('cur_time vs cur_altitude')
-    axs[1].plot(df['cur_time'], df['cur_airspeed'])
-    axs[1].set_title('cur_time vs cur_airspeed')
-    axs[2].plot(df['cur_time'], df['vertical_speed'])
-    axs[2].set_title('cur_time vs vertical_speed')
-    axs[3].plot(df['cur_time'], df['angle_of_attack'])
-    axs[3].set_title('cur_time vs angle_of_attack')
-    axs[4].plot(df['cur_time'], df['flight_path_angle'])
-    axs[4].set_title('cur_time vs flight_path_angle')
-    axs[5].plot(df['cur_time'], df['pitch_angle'])
-    axs[5].set_title('cur_time vs pitch_angle')
-    axs[6].plot(df['cur_time'], df['roll'])
-    axs[6].set_title('cur_time vs roll')
-    plt.show()
+    df.to_excel(writer, sheet_name=f"sheet_data_{flight_id}")
 
-    # just looking at first 10 records
-    for i in range(10):
-        print(flight_series[i].to_dict())
+
+
+
+if __name__ == '__main__':
+    writer = pd.ExcelWriter('stall_data.xlsx', engine='xlsxwriter')
+    for i in range(100):
+        create_flight_records(i,writer)
+    writer.save()
