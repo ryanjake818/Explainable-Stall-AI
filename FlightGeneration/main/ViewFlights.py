@@ -1,13 +1,8 @@
-import random
-
 import matplotlib.pyplot as plt
 import pandas as pd
 
-import FlightGeneration.dcd.FlightDataHelper as flightHelper
-
 if __name__ == '__main__':
-
-    df = pd.read_excel(open('stall_data.xlsx', 'rb'),sheet_name='sheet_data_1')
+    df = pd.read_excel(open('stall_data.xlsx', 'rb'), sheet_name='sheet_data_1')
 
     fig, axs = plt.subplots(7)
     axs[0].plot(df['cur_time'], df['cur_altitude'])
@@ -25,4 +20,3 @@ if __name__ == '__main__':
     axs[6].plot(df['cur_time'], df['roll'])
     axs[6].set_title('cur_time vs roll')
     plt.show()
-
