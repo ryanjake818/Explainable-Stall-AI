@@ -1,5 +1,6 @@
 import random
 
+import matplotlib.pyplot as plt
 import pandas as pd
 
 import FlightGeneration.dcd.FlightDataHelper as flightHelper
@@ -47,6 +48,16 @@ if __name__ == '__main__':
     # print dataframe
     print(df)
     df.to_excel("Stall_Data.xlsx")
+
+    fig, axs = plt.subplots(7)
+    axs[0].plot(df['cur_time'], df['cur_altitude'])
+    axs[1].plot(df['cur_time'], df['cur_airspeed'])
+    axs[2].plot(df['cur_time'], df['vertical_speed'])
+    axs[3].plot(df['cur_time'], df['angle_of_attack'])
+    axs[4].plot(df['cur_time'], df['flight_path_angle'])
+    axs[5].plot(df['cur_time'], df['pitch_angle'])
+    axs[6].plot(df['cur_time'], df['roll'])
+    plt.show()
 
     # just looking at first 10 records
     for i in range(10):
