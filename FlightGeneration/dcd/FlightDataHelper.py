@@ -17,7 +17,7 @@ def create_flight(flight_id):
     magnitude_of_uncommanded_roll = random.randint(0, 90)
     initial_airspeed = random.randint(120, 300)
 
-    period_of_uncommanded_roll = np.random.normal(0, 10, 1)
+    period_of_uncommanded_roll = round(np.random.normal(0, 10, 1)[0], 6)
     time_from_buffet_to_uncommanded_descent_high = random.randint(time_from_buffet_to_uncommanded_descent + 1,
                                                                   time_from_buffet_to_uncommanded_descent + 30)
     magnitude_of_uncommanded_descent_high = random.randint(120, 1200)
