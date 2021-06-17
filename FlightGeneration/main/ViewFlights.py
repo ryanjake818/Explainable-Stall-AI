@@ -17,7 +17,7 @@ def lineplots_flight_data(cols, time, df):
         #axs[i].set_yticks(np.arange(min(df[cols[i]], max(df[cols[i]]), abs((max(df[cols[i]]) - min(df[cols[i]])/5)))))
     plt.subplots_adjust(hspace=1, wspace=0.001)
     fig.suptitle('Flight Data Simulations', y=0.92)
-    fig.savefig(cwd + '/visuals/' + 'flight_data.png')
+    fig.savefig(cwd + 'flight_data.png')
     plt.show()
 
 if __name__ == '__main__':
