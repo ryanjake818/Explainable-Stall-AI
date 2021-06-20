@@ -27,7 +27,8 @@ class FlightData:
                  vertical_speed,
                  angle_of_attack,
                  flight_path_angle,
-                 pitch_angle):
+                 pitch_angle,
+                 sign_flag):
         self.pitch_angle = pitch_angle
         self.flight_path_angle = flight_path_angle
         self.angle_of_attack = angle_of_attack
@@ -54,6 +55,7 @@ class FlightData:
         self.alt_noise = alt_noise
         self.initial_alt = initial_alt
         self.flight_id = flight_id
+        self.sign_flag = sign_flag
 
     # code to make the data a dictionary so it's easy to use/view
     def to_dict(self):
@@ -83,5 +85,6 @@ class FlightData:
             'vertical_speed': self.vertical_speed,
             'angle_of_attack': self.angle_of_attack,
             'flight_path_angle': self.flight_path_angle,
-            'pitch_angle': self.pitch_angle
+            'pitch_angle': self.pitch_angle,
+            'sign_flag': self.sign_flag
         }

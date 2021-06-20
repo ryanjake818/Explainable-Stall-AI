@@ -36,7 +36,8 @@ def create_flight_records(flight_id, writer):
                                                                 last_flight_record.cur_time,
                                                                 last_flight_record.cur_altitude,
                                                                 last_flight_record.cur_airspeed,
-                                                                last_flight_record.angle_of_attack)
+                                                                last_flight_record.angle_of_attack,
+                                                                last_flight_record.sign_flag)
         if new_flight_record.cur_altitude <= 0:
             break
         # add new record to the list
@@ -52,6 +53,6 @@ def create_flight_records(flight_id, writer):
 
 if __name__ == '__main__':
     writer = pd.ExcelWriter('stall_data.xlsx', engine='xlsxwriter')
-    for i in range(100):
+    for i in range(1):
         create_flight_records(i, writer)
     writer.save()

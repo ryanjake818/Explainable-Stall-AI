@@ -14,7 +14,7 @@ def create_flight(flight_id):
                                                       time_from_buffet_to_uncommanded_descent + 300)
     time_from_buffet_to_uncommanded_roll = random.randint(time_from_buffet_to_uncommanded_descent,
                                                           time_from_buffet_to_uncommanded_descent + 30)
-    magnitude_of_uncommanded_roll = random.randint(0, 90)
+    magnitude_of_uncommanded_roll = random.randint(0, 45)
     initial_airspeed = random.randint(120, 300)
 
     period_of_uncommanded_roll = round(np.random.normal(0, 10, 1)[0], 6)
@@ -38,6 +38,7 @@ def create_flight(flight_id):
     angle_of_attack = 0
     flight_path_angle = 0
     pitch_angle = 0
+    sign_flag = 1
 
     return FlightData(
         flight_id,
@@ -65,7 +66,8 @@ def create_flight(flight_id):
         vertical_speed,
         angle_of_attack,
         flight_path_angle,
-        pitch_angle)
+        pitch_angle,
+        sign_flag)
 
 
 # generate flight record based on constants and past flight data
@@ -74,18 +76,20 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
                            magnitude_of_uncommanded_roll, period_of_uncommanded_roll, initial_airspeed,
                            time_from_buffet_to_uncommanded_descent_high, magnitude_of_uncommanded_descent_high,
                            time_from_buffet_to_positive_angle_of_attack, max_angle_of_attack,
-                           rate_of_change_in_angle_of_attack, past_time, past_alt, past_airspeed, past_angle_of_attack):
+                           rate_of_change_in_angle_of_attack, past_time, past_alt, past_airspeed, past_angle_of_attack, sign_flag):
     initial_alt = initial_alt
 
     time_to_buffet = time_to_buffet
     time_from_buffet_to_uncommanded_descent = time_from_buffet_to_uncommanded_descent
     magnitude_of_uncommanded_descent = magnitude_of_uncommanded_descent
+    magnitude_of_uncommanded_descent_seconds = magnitude_of_uncommanded_descent/60
     time_from_buffet_to_uncommanded_roll = time_from_buffet_to_uncommanded_roll
     magnitude_of_uncommanded_roll = magnitude_of_uncommanded_roll
     initial_airspeed = initial_airspeed
     period_of_uncommanded_roll = period_of_uncommanded_roll
     time_from_buffet_to_uncommanded_descent_high = time_from_buffet_to_uncommanded_descent_high
     magnitude_of_uncommanded_descent_high = magnitude_of_uncommanded_descent_high
+    magnitude_of_uncommanded_descent_high_seconds = magnitude_of_uncommanded_descent_high/60
     time_from_buffet_to_positive_angle_of_attack = time_from_buffet_to_positive_angle_of_attack
     max_angle_of_attack = max_angle_of_attack
     rate_of_change_in_angle_of_attack = rate_of_change_in_angle_of_attack
@@ -100,13 +104,14 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
     # altitude calculation
     cur_alt = initial_alt + alt_noise
     if cur_time > time_to_buffet + time_from_buffet_to_uncommanded_descent_high:
-        cur_alt = round(past_alt - (magnitude_of_uncommanded_descent_high / delta_time) + alt_noise, 6)
+        cur_alt = round(past_alt - (magnitude_of_uncommanded_descent_high_seconds / delta_time) + alt_noise, 6)
     elif cur_time > time_to_buffet + time_from_buffet_to_uncommanded_descent:
-        cur_alt = round(past_alt - (magnitude_of_uncommanded_descent / delta_time) + alt_noise, 6)
+        cur_alt = round(past_alt - (magnitude_of_uncommanded_descent_seconds / delta_time) + alt_noise, 6)
     elif cur_time > time_to_buffet + (time_from_buffet_to_uncommanded_descent - 5):
         cur_alt = initial_alt + alt_noise_buffet
 
-    vertical_speed = round((cur_alt - past_alt) / delta_time, 6)
+    #convert to knots
+    vertical_speed = round(((cur_alt - past_alt) / delta_time) * .592, 6)
 
     # angle_of_attack calculation
     angle_of_attack = 0
@@ -124,15 +129,20 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
 
     if cur_airspeed != 0:
         # arcsin needs to be between -1 and 1, we keep getting failure notice when vs/ca isn't in that range
-        flight_path_angle = round(np.arcsin(vertical_speed / cur_airspeed), 6)
+        flight_path_angle = round((np.arcsin(vertical_speed / cur_airspeed) * 57.3), 6)
 
     # pitch angle calculation
     pitch_angle = flight_path_angle + angle_of_attack
 
     # roll calculation
     roll = 0
+    if magnitude_of_uncommanded_roll == 45:
+        sign_flag = -1
+    if magnitude_of_uncommanded_roll == -45:
+        sign_flag = 1
     if cur_time > time_to_buffet + time_from_buffet_to_uncommanded_roll:
-        roll = np.sin(magnitude_of_uncommanded_roll)
+        roll = np.sin(magnitude_of_uncommanded_roll * np.pi/180)
+        magnitude_of_uncommanded_roll = magnitude_of_uncommanded_roll + (1 * sign_flag)
 
     return FlightData(
         flight_id,
@@ -160,4 +170,5 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
         vertical_speed,
         angle_of_attack,
         flight_path_angle,
-        pitch_angle)
+        pitch_angle,
+        sign_flag)
