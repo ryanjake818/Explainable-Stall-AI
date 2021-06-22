@@ -30,10 +30,12 @@ class FlightData:
                  cur_avg_vertical_speed,
                  angle_of_attack,
                  flight_path_angle,
+                 cur_avg_flight_path_angle,
                  pitch_angle,
                  sign_flag):
         self.pitch_angle = pitch_angle
         self.flight_path_angle = flight_path_angle
+        self.cur_avg_flight_path_angle = cur_avg_flight_path_angle
         self.angle_of_attack = angle_of_attack
         self.vertical_speed = vertical_speed
         self.cur_avg_vertical_speed = cur_avg_vertical_speed
@@ -94,6 +96,7 @@ class FlightData:
             'cur_avg_vertical_speed': self.cur_avg_vertical_speed,
             'angle_of_attack': self.angle_of_attack,
             'flight_path_angle': self.flight_path_angle,
+            'cur_avg_flight_path_angle': self.cur_avg_flight_path_angle,
             'pitch_angle': self.pitch_angle,
             'sign_flag': self.sign_flag
         }

@@ -40,6 +40,7 @@ def create_flight(flight_id):
     cur_avg_vertical_speed = vertical_speed
     angle_of_attack = 0
     flight_path_angle = 0
+    cur_avg_flight_path_angle = 0
     pitch_angle = 0
     sign_flag = 1
 
@@ -72,6 +73,7 @@ def create_flight(flight_id):
         cur_avg_vertical_speed,
         angle_of_attack,
         flight_path_angle,
+        cur_avg_flight_path_angle,
         pitch_angle,
         sign_flag)
 
@@ -155,6 +157,10 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
         # arcsin needs to be between -1 and 1, we keep getting failure notice when vs/ca isn't in that range
         flight_path_angle = round((np.arcsin(vertical_speed / cur_airspeed) * 57.3), 6)
 
+    cur_avg_flight_path_angle = 0
+    if cur_avg_airspeeds != 0:
+        cur_avg_flight_path_angle = round((np.arcsin(cur_avg_vertical_speeds / cur_avg_airspeeds) * 57.3), 6)
+
     # pitch angle calculation
     pitch_angle = flight_path_angle + angle_of_attack
 
@@ -197,5 +203,6 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
         cur_avg_vertical_speeds,
         angle_of_attack,
         flight_path_angle,
+        cur_avg_flight_path_angle,
         pitch_angle,
         sign_flag)
