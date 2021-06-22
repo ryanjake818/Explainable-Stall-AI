@@ -8,7 +8,7 @@ from FlightGeneration.dcd.FlightData import FlightData
 # first initial flight creation, lot of randomness to set the records
 def create_flight(flight_id):
     initial_alt = random.randint(5000, 43000)
-    time_to_buffet = random.randint(0, 100)
+    time_to_buffet = random.randint(100, 1000)
     time_from_buffet_to_uncommanded_descent = random.randint(0, 10)
     magnitude_of_uncommanded_descent = random.randint(time_from_buffet_to_uncommanded_descent + 1,
                                                       time_from_buffet_to_uncommanded_descent + 300)
