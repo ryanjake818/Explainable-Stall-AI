@@ -32,9 +32,12 @@ def create_flight(flight_id):
     airspeed_noise = round(np.random.normal(0, 5, 1)[0], 6)
     airspeed_noise_buffet = round(np.random.normal(0, 10, 1)[0], 6)
     cur_altitude = initial_alt
+    cur_avg_altitude = initial_alt
     cur_airspeed = initial_airspeed
+    cur_avg_airspeed = initial_airspeed
     roll = 0
     vertical_speed = 0
+    cur_avg_vertical_speed = vertical_speed
     angle_of_attack = 0
     flight_path_angle = 0
     pitch_angle = 0
@@ -61,9 +64,12 @@ def create_flight(flight_id):
         airspeed_noise,
         airspeed_noise_buffet,
         cur_altitude,
+        cur_avg_altitude,
         cur_airspeed,
+        cur_avg_airspeed,
         roll,
         vertical_speed,
+        cur_avg_vertical_speed,
         angle_of_attack,
         flight_path_angle,
         pitch_angle,
@@ -76,20 +82,21 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
                            magnitude_of_uncommanded_roll, period_of_uncommanded_roll, initial_airspeed,
                            time_from_buffet_to_uncommanded_descent_high, magnitude_of_uncommanded_descent_high,
                            time_from_buffet_to_positive_angle_of_attack, max_angle_of_attack,
-                           rate_of_change_in_angle_of_attack, past_time, past_alt, past_airspeed, past_angle_of_attack, sign_flag):
+                           rate_of_change_in_angle_of_attack, past_time, past_alt, last_two_seconds, past_airspeed,
+                           past_angle_of_attack, sign_flag):
     initial_alt = initial_alt
 
     time_to_buffet = time_to_buffet
     time_from_buffet_to_uncommanded_descent = time_from_buffet_to_uncommanded_descent
     magnitude_of_uncommanded_descent = magnitude_of_uncommanded_descent
-    magnitude_of_uncommanded_descent_seconds = magnitude_of_uncommanded_descent/60
+    magnitude_of_uncommanded_descent_seconds = magnitude_of_uncommanded_descent / 60
     time_from_buffet_to_uncommanded_roll = time_from_buffet_to_uncommanded_roll
     magnitude_of_uncommanded_roll = magnitude_of_uncommanded_roll
     initial_airspeed = initial_airspeed
     period_of_uncommanded_roll = period_of_uncommanded_roll
     time_from_buffet_to_uncommanded_descent_high = time_from_buffet_to_uncommanded_descent_high
     magnitude_of_uncommanded_descent_high = magnitude_of_uncommanded_descent_high
-    magnitude_of_uncommanded_descent_high_seconds = magnitude_of_uncommanded_descent_high/60
+    magnitude_of_uncommanded_descent_high_seconds = magnitude_of_uncommanded_descent_high / 60
     time_from_buffet_to_positive_angle_of_attack = time_from_buffet_to_positive_angle_of_attack
     max_angle_of_attack = max_angle_of_attack
     rate_of_change_in_angle_of_attack = rate_of_change_in_angle_of_attack
@@ -101,6 +108,15 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
     airspeed_noise = round(np.random.normal(0, 5, 1)[0], 6)
     airspeed_noise_buffet = round(np.random.normal(0, 10, 1)[0], 6)
 
+    past_altitudes = []
+    past_airspeeds = []
+    past_vertical_speeds = []
+
+    for flight_data in last_two_seconds:
+        past_altitudes.append(flight_data.cur_altitude)
+        past_airspeeds.append(flight_data.cur_airspeed)
+        past_vertical_speeds.append(flight_data.vertical_speed)
+
     # altitude calculation
     cur_alt = initial_alt + alt_noise
     if cur_time > time_to_buffet + time_from_buffet_to_uncommanded_descent_high:
@@ -110,8 +126,13 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
     elif cur_time > time_to_buffet + (time_from_buffet_to_uncommanded_descent - 5):
         cur_alt = initial_alt + alt_noise_buffet
 
-    #convert to knots
+    past_altitudes.append(cur_alt)
+    cur_avg_altitude = np.average(past_altitudes)
+
+    # convert to knots
     vertical_speed = round(((cur_alt - past_alt) / delta_time) * .592, 6)
+    past_vertical_speeds.append(vertical_speed)
+    cur_avg_vertical_speeds = np.average(past_vertical_speeds)
 
     # angle_of_attack calculation
     angle_of_attack = 0
@@ -124,6 +145,9 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
     cur_airspeed = initial_airspeed + airspeed_noise
     if cur_time > time_to_buffet:
         cur_airspeed = past_airspeed + airspeed_noise_buffet
+
+    past_airspeeds.append(cur_airspeed)
+    cur_avg_airspeeds = np.average(past_airspeeds)
 
     flight_path_angle = 0
 
@@ -141,7 +165,7 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
     if magnitude_of_uncommanded_roll == -45:
         sign_flag = 1
     if cur_time > time_to_buffet + time_from_buffet_to_uncommanded_roll:
-        roll = np.sin(magnitude_of_uncommanded_roll * np.pi/180)
+        roll = np.sin(magnitude_of_uncommanded_roll * np.pi / 180)
         magnitude_of_uncommanded_roll = magnitude_of_uncommanded_roll + (1 * sign_flag)
 
     return FlightData(
@@ -165,9 +189,12 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
         airspeed_noise,
         airspeed_noise_buffet,
         cur_alt,
+        cur_avg_altitude,
         cur_airspeed,
+        cur_avg_airspeeds,
         roll,
         vertical_speed,
+        cur_avg_vertical_speeds,
         angle_of_attack,
         flight_path_angle,
         pitch_angle,

@@ -18,6 +18,7 @@ def create_flight_records(flight_id, writer):
     for i in range(num_iterations):
         # always pull last flight record so we can use past data for calculations
         last_flight_record = flight_series[-1]
+        last_two_seconds = flight_series[-19:]
         # create new record, this is using FlightDataHelper classes generate_flight_record method
         new_flight_record = flightHelper.generate_flight_record(last_flight_record.flight_id,
                                                                 last_flight_record.initial_alt,
@@ -35,6 +36,7 @@ def create_flight_records(flight_id, writer):
                                                                 last_flight_record.rate_of_change_in_angle_of_attack,
                                                                 last_flight_record.cur_time,
                                                                 last_flight_record.cur_altitude,
+                                                                last_two_seconds,
                                                                 last_flight_record.cur_airspeed,
                                                                 last_flight_record.angle_of_attack,
                                                                 last_flight_record.sign_flag)
