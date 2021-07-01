@@ -11,7 +11,7 @@ def lineplots_flight_data(cols, time, df, n):
         ax.grid()
         ax.plot(time, df[col])
         ax.set_title(col + ' vs ' + time.name + ' (scale: 10 = 1s)')
-        ax.set_xticks(np.arange(min(time), max(time) + 10, 10.0))
+        #ax.set_xticks(np.arange(min(time), max(time) + 10, 10.0))
     plt.subplots_adjust(hspace=1, wspace=0.1)
     fig.suptitle('Flight Data Simulations', y=0.92)
     fig.savefig(cwd + '/visuals/' + 'flight_data' + str(n) + '.png')
