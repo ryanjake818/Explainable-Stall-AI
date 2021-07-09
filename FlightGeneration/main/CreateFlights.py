@@ -49,8 +49,7 @@ def create_flight_records(flight_id, writer, csvWriter):
     df = pd.DataFrame([x.to_dict() for x in flight_series])
 
     # put df in excel
-
-    #df.to_excel(writer, sheet_name=f"sheet_data_{flight_id}")
+    # df.to_excel(writer, sheet_name=f"sheet_data_{flight_id}")
     if flight_id == 0:
         df.to_csv(csvWriter, mode='w', header=True)
     else:
