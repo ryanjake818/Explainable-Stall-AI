@@ -122,17 +122,16 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
     # altitude calculation
     cur_alt = initial_alt + alt_noise
     if cur_time > time_to_buffet + time_from_buffet_to_uncommanded_descent_high:
-        cur_alt = round(past_alt - (magnitude_of_uncommanded_descent_high_seconds / delta_time) + alt_noise, 6)
+        cur_alt = round(past_alt - (magnitude_of_uncommanded_descent_high_seconds * delta_time) - abs(alt_noise_buffet), 6)
     elif cur_time > time_to_buffet + time_from_buffet_to_uncommanded_descent:
-        cur_alt = round(past_alt - (magnitude_of_uncommanded_descent_seconds / delta_time) + alt_noise, 6)
+        cur_alt = round(past_alt - (magnitude_of_uncommanded_descent_seconds * delta_time) - abs(alt_noise_buffet), 6)
     elif cur_time > time_to_buffet + (time_from_buffet_to_uncommanded_descent - 5):
         cur_alt = initial_alt + alt_noise_buffet
 
     past_altitudes.append(cur_alt)
     cur_avg_altitude = np.average(past_altitudes)
 
-    # convert to knots
-    vertical_speed = round(((cur_alt - past_alt) / delta_time) * .592, 6)
+    vertical_speed = round(((cur_alt - past_alt) / delta_time), 6)
     past_vertical_speeds.append(vertical_speed)
     cur_avg_vertical_speeds = np.average(past_vertical_speeds)
 
@@ -146,20 +145,34 @@ def generate_flight_record(flight_id, initial_alt, time_to_buffet, time_from_buf
 
     cur_airspeed = initial_airspeed + airspeed_noise
     if cur_time > time_to_buffet:
-        cur_airspeed = past_airspeed + airspeed_noise_buffet
+        cur_airspeed = past_airspeed - abs(airspeed_noise_buffet) * delta_time
+    if cur_airspeed <= 0:
+        cur_airspeed = 0
 
-    past_airspeeds.append(cur_airspeed)
+    #convert cur_airspeed to fps
+    past_airspeeds.append(cur_airspeed*1.688)
     cur_avg_airspeeds = np.average(past_airspeeds)
 
     flight_path_angle = 0
 
     if cur_airspeed != 0:
         # arcsin needs to be between -1 and 1, we keep getting failure notice when vs/ca isn't in that range
-        flight_path_angle = round((np.arcsin(vertical_speed / cur_airspeed) * 57.3), 6)
+        # convert cur_airspeed to fps
+        if (vertical_speed / (cur_airspeed*1.688)) > 1:
+            flight_path_angle = round((np.arcsin(1) * 57.3), 6)
+        elif (vertical_speed / (cur_airspeed*1.688)) < -1:
+            flight_path_angle = round((np.arcsin(-1) * 57.3), 6)
+        else:
+            flight_path_angle = round((np.arcsin(vertical_speed / (cur_airspeed*1.688)) * 57.3), 6)
 
     cur_avg_flight_path_angle = 0
     if cur_avg_airspeeds != 0:
-        cur_avg_flight_path_angle = round((np.arcsin(cur_avg_vertical_speeds / cur_avg_airspeeds) * 57.3), 6)
+        if (cur_avg_vertical_speeds / cur_avg_airspeeds) > 1:
+            cur_avg_flight_path_angle = round((np.arcsin(1) * 57.3), 6)
+        elif (cur_avg_vertical_speeds / cur_avg_airspeeds) < -1:
+            cur_avg_flight_path_angle = round((np.arcsin(-1) * 57.3), 6)
+        else:
+            cur_avg_flight_path_angle = round((np.arcsin(cur_avg_vertical_speeds / cur_avg_airspeeds) * 57.3), 6)
 
     # pitch angle calculation
     pitch_angle = flight_path_angle + angle_of_attack
