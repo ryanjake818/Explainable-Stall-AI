@@ -5,7 +5,7 @@ import pandas as pd
 import FlightGeneration.dcd.FlightDataHelper as flightHelper
 
 
-def create_flight_records(flight_id, writer):
+def create_flight_records(flight_id, writer, csvWriter):
     # just random number of seconds between 1000 and 50000 to generate flight records every .1 second
     num_iterations = random.randint(1000, 50000) - 1
 
@@ -50,11 +50,16 @@ def create_flight_records(flight_id, writer):
 
     # put df in excel
 
-    df.to_excel(writer, sheet_name=f"sheet_data_{flight_id}")
+    #df.to_excel(writer, sheet_name=f"sheet_data_{flight_id}")
+    if flight_id == 0:
+        df.to_csv(csvWriter, mode='w', header=True)
+    else:
+        df.to_csv(csvWriter, mode='a', header=False)
 
 
 if __name__ == '__main__':
-    writer = pd.ExcelWriter('stall_data.xlsx', engine='xlsxwriter')
-    for i in range(1):
-        create_flight_records(i, writer)
-    writer.save()
+    csvWriter = 'stall_data.csv'
+    excelWriter = pd.ExcelWriter('stall_data.xlsx', engine='xlsxwriter')
+    for i in range(10):
+        create_flight_records(i, excelWriter, csvWriter)
+    excelWriter.save()
